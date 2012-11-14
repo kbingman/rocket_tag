@@ -186,7 +186,7 @@ module RocketTag
           names = RocketTag::Tag.select{:name}.where do
             id.in(RocketTag::Tag.select{'alias_tags.alias_id'}
               .joins(:alias).where{
-                tags.name.downcase.in(list)
+                tags.name.in(list)
               })
           end
           names.map{|t| t.name}
@@ -199,6 +199,7 @@ module RocketTag
           c = tags_list.each_key.map do |context|
             squeel do
               list = tags_list[context]
+              list.map{ |i| i.downcase }
               list << alias_tag_names.call(list)
             
               tags.name.in(list.flatten!) & (taggings.context == context.to_s)
@@ -211,6 +212,7 @@ module RocketTag
 
         else
           # Any tag can match any context
+          tags_list.map{ |i| i.downcase }
           tags_list << alias_tag_names.call(tags_list) 
           q = q.
             where{tags.name.in(tags_list.flatten!)}.

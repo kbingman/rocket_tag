@@ -186,7 +186,7 @@ module RocketTag
           names = RocketTag::Tag.select{:name}.where do
             id.in(RocketTag::Tag.select{'alias_tags.alias_id'}
               .joins(:alias).where{
-                tags.name.in(list)
+                tags.name.downcase.in(list)
               })
           end
           names.map{|t| t.name}
